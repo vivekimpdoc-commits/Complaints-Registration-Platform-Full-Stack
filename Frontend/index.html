@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints Registration Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav id="main-nav" class="hidden">
+            <div class="nav-container">
+                <div class="logo">ComplaintHub</div>
+                <div class="nav-links">
+                    <button id="nav-my-complaints" class="nav-btn user-only">My Complaints</button>
+                    <button id="nav-admin-dashboard" class="nav-btn admin-only hidden">Admin Dashboard</button>
+                    <button id="logout-btn" class="nav-btn logout">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <main id="content">
+            <!-- Dynamic content will be injected here -->
+            <div id="loading-screen" class="screen">
+                <div class="loader"></div>
+                <p>Loading...</p>
+            </div>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Templates for different screens -->
+    <template id="register-template">
+        <section class="screen auth-screen">
+            <div class="auth-card">
+                <h2>Create Account</h2>
+                <p class="subtitle">Join our platform to register your complaints.</p>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" placeholder="john@example.com" required>
+                    </div>
+                    <button type="submit" class="primary-btn">Send OTP</button>
+                </form>
+                <p class="auth-footer">Already have an account? <a href="#" id="go-to-login">Login</a></p>
+            </div>
+        </section>
+    </template>
+
+    <template id="otp-template">
+        <section class="screen auth-screen">
+            <div class="auth-card">
+                <h2>Verify Email</h2>
+                <p class="subtitle">Enter the 6-digit code sent to your email.</p>
+                <form id="otp-form">
+                    <div class="form-group">
+                        <label for="otp-code">OTP Code</label>
+                        <input type="text" id="otp-code" placeholder="123456" maxlength="6" pattern="\d{6}" required>
+                    </div>
+                    <button type="submit" class="primary-btn">Verify OTP</button>
+                </form>
+            </div>
+        </section>
+    </template>
+
+    <template id="password-setup-template">
+        <section class="screen auth-screen">
+            <div class="auth-card">
+                <h2>Set Password</h2>
+                <p class="subtitle">Choose a strong password for your account.</p>
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="setup-password">Password</label>
+                        <input type="password" id="setup-password" placeholder="••••••••" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="••••••••" required minlength="6">
+                    </div>
+                    <button type="submit" class="primary-btn">Complete Registration</button>
+                </form>
+            </div>
+        </section>
+    </template>
+
+    <template id="login-template">
+        <section class="screen auth-screen">
+            <div class="auth-card">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Login to manage your complaints.</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="primary-btn">Login</button>
+                </form>
+                <p class="auth-footer">Don't have an account? <a href="#" id="go-to-register">Register</a></p>
+            </div>
+        </section>
+    </template>
+
+    <template id="my-complaints-template">
+        <section class="screen dashboard-screen">
+            <div class="header-actions">
+                <h1>My Complaints</h1>
+                <button id="new-complaint-btn" class="primary-btn">+ Submit New Complaint</button>
+            </div>
+            <div id="complaints-list" class="complaints-grid">
+                <!-- Complaints will be rendered here -->
+            </div>
+        </section>
+    </template>
+
+    <template id="submit-complaint-template">
+        <section class="screen complaint-submission-screen">
+            <div class="complaint-card">
+                <h1>Submit a Complaint</h1>
+                <div id="step-1">
+                    <p class="instruction">Please describe your complaint in detail.</p>
+                    <textarea id="complaint-text" placeholder="I am facing issues with..." required></textarea>
+                    <button id="get-ai-question-btn" class="primary-btn">Next: AI Follow-up</button>
+                </div>
+                <div id="step-2" class="hidden">
+                    <div class="ai-box">
+                        <p class="ai-label">AI Follow-up Question:</p>
+                        <p id="ai-question-display" class="ai-question"></p>
+                    </div>
+                    <p class="instruction">Your Answer:</p>
+                    <textarea id="user-answer" placeholder="Your response here..." required></textarea>
+                    <button id="final-submit-btn" class="primary-btn">Submit Complaint</button>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="admin-dashboard-template">
+        <section class="screen dashboard-screen">
+            <h1>Admin Dashboard</h1>
+            <p class="subtitle">All user complaints across the platform.</p>
+            <div id="admin-complaints-list" class="complaints-list-container">
+                <!-- Admin complaints will be rendered here -->
+            </div>
+        </section>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>
