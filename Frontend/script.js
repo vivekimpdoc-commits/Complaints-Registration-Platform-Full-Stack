@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3000/api';
+const BACKEND_BASE_URL = 'http://localhost:3000';
+const API_URL = `${BACKEND_BASE_URL}/api`;
 
 // State
 let user = null;
@@ -32,7 +33,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
         headers: { 'Content-Type': 'application/json' },
     };
     if (body) options.body = JSON.stringify(body);
-    
+
     // Credentials true for cookies
     options.credentials = 'include';
 
@@ -128,7 +129,7 @@ function navigateTo(page) {
 function setupRegisterForm() {
     const form = document.getElementById('register-form');
     const goToLogin = document.getElementById('go-to-login');
-    
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('reg-name').value;
@@ -138,7 +139,7 @@ function setupRegisterForm() {
             localStorage.setItem('pendingEmail', email);
             showToast('OTP sent to your email.');
             navigateTo('otp');
-        } catch (err) {}
+        } catch (err) { }
     });
 
     goToLogin.addEventListener('click', (e) => {
@@ -163,7 +164,7 @@ function setupPasswordForm() {
         e.preventDefault();
         const password = document.getElementById('setup-password').value;
         const confirm = document.getElementById('confirm-password').value;
-        
+
         if (password !== confirm) {
             return showToast('Passwords do not match.', 'error');
         }
@@ -177,7 +178,7 @@ function setupPasswordForm() {
             localStorage.removeItem('pendingEmail');
             localStorage.removeItem('pendingOTP');
             navigateTo('login');
-        } catch (err) {}
+        } catch (err) { }
     });
 }
 
@@ -196,7 +197,7 @@ function setupLoginForm() {
             updateUI();
             if (user.role === 'admin') navigateTo('admin-dashboard');
             else navigateTo('my-complaints');
-        } catch (err) {}
+        } catch (err) { }
     });
 
     goToRegister.addEventListener('click', (e) => {
@@ -210,14 +211,14 @@ function setupLoginForm() {
 async function loadMyComplaints() {
     document.getElementById('new-complaint-btn').addEventListener('click', () => navigateTo('submit-complaint'));
     const list = document.getElementById('complaints-list');
-    
+
     try {
         const complaints = await apiCall('/complaints/my');
         if (complaints.length === 0) {
             list.innerHTML = '<p class="subtitle">No complaints submitted yet.</p>';
             return;
         }
-        
+
         list.innerHTML = complaints.map(c => `
             <div class="complaint-card">
                 <div class="complaint-header">
@@ -231,7 +232,7 @@ async function loadMyComplaints() {
                 </div>
             </div>
         `).join('');
-    } catch (err) {}
+    } catch (err) { }
 }
 
 function setupComplaintForm() {
@@ -243,15 +244,15 @@ function setupComplaintForm() {
     getAiBtn.addEventListener('click', async () => {
         const text = document.getElementById('complaint-text').value;
         if (!text) return showToast('Please enter your complaint.', 'error');
-        
+
         getAiBtn.disabled = true;
         getAiBtn.textContent = 'Generating...';
-        
+
         try {
             const data = await apiCall('/ai/question', 'POST', { complaint_text: text });
             currentComplaint.text = text;
             currentComplaint.aiQuestion = data.question;
-            
+
             document.getElementById('ai-question-display').textContent = data.question;
             step1.classList.add('hidden');
             step2.classList.remove('hidden');
@@ -264,9 +265,9 @@ function setupComplaintForm() {
     finalSubmitBtn.addEventListener('click', async () => {
         const answer = document.getElementById('user-answer').value;
         if (!answer) return showToast('Please answer the follow-up question.', 'error');
-        
+
         finalSubmitBtn.disabled = true;
-        
+
         try {
             await apiCall('/complaints', 'POST', {
                 complaint_text: currentComplaint.text,
@@ -304,7 +305,7 @@ async function loadAllComplaints() {
                 </div>
             </div>
         `).join('');
-    } catch (err) {}
+    } catch (err) { }
 }
 
 // --- Event Listeners ---
@@ -319,7 +320,7 @@ logoutBtn.addEventListener('click', async () => {
         updateUI();
         navigateTo('login');
         showToast('Logged out successfully.');
-    } catch (err) {}
+    } catch (err) { }
 });
 
 // Init
