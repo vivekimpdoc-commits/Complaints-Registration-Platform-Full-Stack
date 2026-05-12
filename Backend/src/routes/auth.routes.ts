@@ -4,6 +4,7 @@ import { db } from "../db/index.js";
 import { users } from "../db/schema.js";
 import { eq, and } from "drizzle-orm";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import { sendOTPEmail } from "../utils/email.js";
 import { authenticateToken } from "../middleware/auth.js";
 import type { AuthRequest } from "../middleware/auth.js";
@@ -73,8 +74,10 @@ router.post("/register", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid or expired OTP." });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     await db.update(users)
-      .set({ password, is_verified: true, otp: null, otp_expiry: null })
+      .set({ password: hashedPassword, is_verified: true, otp: null, otp_expiry: null })
       .where(eq(users.email, email));
 
     res.json({ message: "Registration successful." });
@@ -93,7 +96,7 @@ router.post("/login", async (req: Request, res: Response) => {
       where: and(eq(users.email, email), eq(users.is_verified, true)),
     });
 
-    if (!user || user.password !== password) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
