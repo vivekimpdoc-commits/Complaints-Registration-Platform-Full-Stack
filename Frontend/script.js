@@ -1,5 +1,6 @@
-// Dynamically match the hostname (localhost or 127.0.0.1) to avoid cookie/CORS issues
-const BACKEND_BASE_URL = `http://${window.location.hostname}:3000`;
+// Dynamically match the hostname. If empty (opened as file), default to localhost.
+const hostname = window.location.hostname || 'localhost';
+const BACKEND_BASE_URL = `http://${hostname}:3000`;
 const API_URL = `${BACKEND_BASE_URL}/api`;
 
 // State
