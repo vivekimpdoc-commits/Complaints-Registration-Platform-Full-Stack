@@ -11,7 +11,7 @@ Node.js and Express.js REST API server. Connected to Supabase as the database. D
 - id
 - name
 - email (unique)
-- password (stored as plain text)
+- password (stored as a secure hash)
 - role (either "user" or "admin")
 - otp (the current one-time password sent to the user)
 - otp_expiry (timestamp when the OTP becomes invalid)
@@ -42,7 +42,7 @@ Node.js and Express.js REST API server. Connected to Supabase as the database. D
 - Accepts: email, otp, password
 - Checks that the OTP matches and has not expired
 - Marks the user as verified
-- Saves the password in plain text
+- Saves the password as a secure hash using bcrypt
 - Returns: success message
 
 #### POST /api/auth/login
@@ -69,7 +69,7 @@ Node.js and Express.js REST API server. Connected to Supabase as the database. D
 - Returns: the AI-generated question
 
 #### POST /api/complaints
-- Accepts: complaint_text, ai_question, ai_answer
+- Accepts: complaint_text, ai_question, user_answer
 - Creates a new complaint record linked to the logged-in user
 - Returns: the created complaint
 

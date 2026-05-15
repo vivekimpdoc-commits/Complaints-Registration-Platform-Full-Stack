@@ -100,9 +100,13 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not set in environment variables.");
+    }
+
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
-      process.env.JWT_SECRET!,
+      process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
 
@@ -110,6 +114,7 @@ router.post("/login", async (req: Request, res: Response) => {
       httpOnly: false, // As per requirements for easier local testing
       secure: false,
       sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
     res.json({ name: user.name, email: user.email, role: user.role });
